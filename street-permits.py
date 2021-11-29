@@ -30,15 +30,16 @@ def get_data(start,end):
     query = "$where=applicationissueddate between '{}' and '{}'".format(start_date, end_date)
     qquery = urllib.parse.quote(query, '=&?$')
     limit = '&$limit=50000'
-    url = endpoint+qquery+limit
+    worktype = '&worktype=GenOpening'
+    url = endpoint+qquery+worktype+limit
     street_permits = pd.read_csv(url)
     
     return street_permits
 
 perm_data = get_data(sd,ed)
-perm_data = perm_data.drop_duplicates(subset=['APPLICATIONNUMBER'])
+perm_data = perm_data.drop_duplicates(subset=['applicationnumber'])
 
-gdf_permits = gpd.GeoDataFrame(perm_data,geometry=gpd.points_from_xy(perm_data.LONGITUDE,perm_data.LATITUDE))
+gdf_permits = gpd.GeoDataFrame(perm_data,geometry=gpd.points_from_xy(perm_data.longitude,perm_data.latitude))
 
 geojson_file = 'https://data.cityofchicago.org/resource/k9yb-bpqx.geojson'
 wards = gpd.read_file(geojson_file)
